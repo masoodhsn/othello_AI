@@ -93,3 +93,20 @@ class othello:
 	# تغییر نوبت بازیکن
 	def toggle_turn(self,turn):
 		return "W" if turn == "B" else "B"
+
+
+	def score(self,board):
+		score=0
+		for i in range(self.BOARD_SIZE):
+			for j in range(self.BOARD_SIZE):
+				if (board[i][j]=="W"):
+					if ((i ==0 and j == 0) or (i ==0 and j == self.BOARD_SIZE-1) or (i == self.BOARD_SIZE-1 and j == 0) or (i == self.BOARD_SIZE-1 and j == self.BOARD_SIZE-1)):
+						score+= self.BOARD_SIZE * 4;
+
+					else:						
+						i_t = abs(i - (self.BOARD_SIZE-1)/2)
+						j_t = abs(j - (self.BOARD_SIZE-1)/2)
+						maxi=  i_t if i_t>j_t else j_t
+						score += (maxi%2) * 3 + maxi * 2 + 1
+
+		return(score)

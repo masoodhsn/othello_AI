@@ -30,6 +30,7 @@ def main():
                             print("Game Over!")
                             pygame.quit()
                             sys.exit()
+                print(othello.score(board))
 
         othello.draw_board(screen, board)
         pygame.display.flip()
