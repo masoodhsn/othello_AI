@@ -1,4 +1,5 @@
 ﻿import pygame
+import copy
 
 class othello:
 	def __init__(self):
@@ -6,6 +7,7 @@ class othello:
 		self.BOARD_SIZE = 8  # تعداد خانه‌ها در هر ردیف و ستون
 		self.CELL_SIZE = 80  # اندازه هر خانه
 		self.SCREEN_SIZE = self.BOARD_SIZE * self.CELL_SIZE
+		self.STEP = 3
 
 		# رنگ‌ها
 		self.WHITE = (255, 255, 255)
@@ -95,11 +97,11 @@ class othello:
 		return "W" if turn == "B" else "B"
 
 
-	def score(self,board):
+	def score(self,board,turn):
 		score=0
 		for i in range(self.BOARD_SIZE):
 			for j in range(self.BOARD_SIZE):
-				if (board[i][j]=="W"):
+				if (board[i][j]==turn):
 					if ((i ==0 and j == 0) or (i ==0 and j == self.BOARD_SIZE-1) or (i == self.BOARD_SIZE-1 and j == 0) or (i == self.BOARD_SIZE-1 and j == self.BOARD_SIZE-1)):
 						score+= self.BOARD_SIZE * 4;
 
@@ -110,3 +112,43 @@ class othello:
 						score += (maxi%2) * 3 + maxi * 2 + 1
 
 		return(score)
+
+
+	def minmax_search(self,board):
+		t1,t2,s=self.max_value(board,self.STEP-1)
+		return t1,t2
+
+	def max_value(self,board,step):
+		if(step==-1): return -1,-1,self.score(board,"W")
+		score=0
+		ii,jj=0,0
+		for i in range(self.BOARD_SIZE):
+			for j in range(self.BOARD_SIZE):
+				if(self.is_valid_move(board,i,j,"W")):
+					temp_board= copy.deepcopy(board)
+					self.apply_move(temp_board,i,j,"W")
+					t1,t2,s=self.min_value(temp_board,step-1)
+					if (s > score):
+						score=s
+						ii=i
+						jj=j
+
+		return ii,jj,score
+
+
+	def min_value(self,board,step):
+		if(step==-1): return -1,-1,self.score(board,"W")
+		score=10000
+		ii,jj=0,0
+		for i in range(self.BOARD_SIZE):
+			for j in range(self.BOARD_SIZE):
+				if(self.is_valid_move(board,i,j,"B")):
+					temp_board= copy.deepcopy(board)
+					self.apply_move(temp_board,i,j,"B")
+					t1,t2,s=self.max_value(temp_board,step-1)
+					if (s < score):
+						score=s
+						ii=i
+						jj=j 
+
+		return ii,jj,score
