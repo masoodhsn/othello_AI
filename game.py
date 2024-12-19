@@ -12,6 +12,9 @@ class othello:
 		self.BLACK = (0, 0, 0)
 		self.GREEN = (34, 139, 34)
 		self.GRAY = (169, 169, 169)
+
+		# جهت‌ها برای بررسی حرکت
+		self.DIRECTIONS = [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)]
  
 	def create_board(self):
 		board = [[None for _ in range(self.BOARD_SIZE)] for _ in range(self.BOARD_SIZE)]
@@ -46,15 +49,47 @@ class othello:
 		return row, col
 
 
+	# بررسی حرکت معتبر
+	def is_valid_move(self,board, row, col, turn):
+		if board[row][col] is not None:
+			return False
+		opponent = "W" if turn == "B" else "B"
+		for dr, dc in self.DIRECTIONS:
+			r, c = row + dr, col + dc
+			has_opponent = False
+			while 0 <= r < self.BOARD_SIZE and 0 <= c < self.BOARD_SIZE and board[r][c] == opponent:
+				has_opponent = True
+				r += dr
+				c += dc
+			if has_opponent and 0 <= r < self.BOARD_SIZE and 0 <= c < self.BOARD_SIZE and board[r][c] == turn:
+				return True
+		return False
+
+	# اعمال حرکت و تغییر مهره‌ها
+	def apply_move(self,board, row, col, turn):
+		opponent = "W" if turn == "B" else "B"
+		board[row][col] = turn
+		for dr, dc in self.DIRECTIONS:
+			r, c = row + dr, col + dc
+			path = []
+			while 0 <= r < self.BOARD_SIZE and 0 <= c < self.BOARD_SIZE and board[r][c] == opponent:
+				path.append((r, c))
+				r += dr
+				c += dc
+			if 0 <= r < self.BOARD_SIZE and 0 <= c < self.BOARD_SIZE and board[r][c] == turn:
+				for pr, pc in path:
+					board[pr][pc] = turn
+
+	# بررسی پایان بازی
+	def has_valid_move(self,board, turn):
+		for row in range(self.BOARD_SIZE):
+			for col in range(self.BOARD_SIZE):
+				if self.is_valid_move(board, row, col, turn):
+					return True
+		return False
+
 
 
 	# تغییر نوبت بازیکن
 	def toggle_turn(self,turn):
 		return "W" if turn == "B" else "B"
-
-	# قرار دادن مهره
-	def place_piece(self,board, row, col, turn):
-		if board[row][col] is None:  # اگر خانه خالی است
-			board[row][col] = turn
-			return True
-		return False
