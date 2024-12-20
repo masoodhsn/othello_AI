@@ -11,7 +11,9 @@ def main():
     clock = pygame.time.Clock()
 
     board = othello.create_board()
-    turn = "B"  # بازیکن سیاه شروع می‌کند
+    turn = "B"  # ‌black player is start
+
+
 
     while True:
         for event in pygame.event.get():
@@ -27,21 +29,25 @@ def main():
                 if othello.is_valid_move(board, row, col, "B"):
                     othello.apply_move(board, row, col, "B")
                     turn = othello.toggle_turn("B")
-                print("B:"+str(othello.score(board,"B")))
+                #print("B:"+str(othello.score(board,"B")))
 
-            elif turn == "W":
+
+            elif turn=="W":
                 i,j=othello.minmax_search(board)
-                othello.apply_move(board, i, j, "W")
-                turn = othello.toggle_turn("W")
-                print("W:"+str(othello.score(board,"W")))
+                if i>=0 and j>=0:
+                    othello.apply_move(board, i, j, "W")
+                    turn = othello.toggle_turn("W")
+                    #print("W:"+str(othello.score(board,"W")))
                 
 
             if not othello.has_valid_move(board, turn):
                         turn = othello.toggle_turn(turn)
                         if not othello.has_valid_move(board, turn):
                             print("Game Over!")
-                            pygame.quit()
-                            sys.exit()
+                            othello.final_score(board)
+                            #break;
+                            #pygame.quit()
+                            #sys.exit()
 
         othello.draw_board(screen, board)
         pygame.display.flip()

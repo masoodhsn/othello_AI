@@ -4,8 +4,8 @@ import copy
 class othello:
 	def __init__(self):
 		# تنظیمات صفحه
-		self.BOARD_SIZE = 8  # تعداد خانه‌ها در هر ردیف و ستون
-		self.CELL_SIZE = 80  # اندازه هر خانه
+		self.BOARD_SIZE = 8  # it must be even
+		self.CELL_SIZE = 80  
 		self.SCREEN_SIZE = self.BOARD_SIZE * self.CELL_SIZE
 		self.STEP = 3
 
@@ -15,12 +15,10 @@ class othello:
 		self.GREEN = (34, 139, 34)
 		self.GRAY = (169, 169, 169)
 
-		# جهت‌ها برای بررسی حرکت
 		self.DIRECTIONS = [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)]
  
 	def create_board(self):
 		board = [[None for _ in range(self.BOARD_SIZE)] for _ in range(self.BOARD_SIZE)]
-		# قرار دادن مهره‌های اولیه
 		mid = self.BOARD_SIZE // 2
 		board[mid - 1][mid - 1] = "W"
 		board[mid][mid] = "W"
@@ -43,7 +41,6 @@ class othello:
 					pygame.draw.circle(screen, self.BLACK, rect.center, self.CELL_SIZE // 3)
 
 
-	# تشخیص کلیک روی خانه‌ها
 	def get_cell_from_mouse(self,pos):
 		x, y = pos
 		row = y // self.CELL_SIZE
@@ -51,11 +48,14 @@ class othello:
 		return row, col
 
 
-	# بررسی حرکت معتبر
+	
+
+	
 	def is_valid_move(self,board, row, col, turn):
 		if board[row][col] is not None:
 			return False
 		opponent = "W" if turn == "B" else "B"
+
 		for dr, dc in self.DIRECTIONS:
 			r, c = row + dr, col + dc
 			has_opponent = False
@@ -67,7 +67,6 @@ class othello:
 				return True
 		return False
 
-	# اعمال حرکت و تغییر مهره‌ها
 	def apply_move(self,board, row, col, turn):
 		opponent = "W" if turn == "B" else "B"
 		board[row][col] = turn
@@ -82,7 +81,7 @@ class othello:
 				for pr, pc in path:
 					board[pr][pc] = turn
 
-	# بررسی پایان بازی
+
 	def has_valid_move(self,board, turn):
 		for row in range(self.BOARD_SIZE):
 			for col in range(self.BOARD_SIZE):
@@ -92,7 +91,7 @@ class othello:
 
 
 
-	# تغییر نوبت بازیکن
+
 	def toggle_turn(self,turn):
 		return "W" if turn == "B" else "B"
 
@@ -121,17 +120,18 @@ class othello:
 	def max_value(self,board,step):
 		if(step==-1): return -1,-1,self.score(board,"W")
 		score=0
-		ii,jj=0,0
+		ii,jj=-1,-1
 		for i in range(self.BOARD_SIZE):
 			for j in range(self.BOARD_SIZE):
 				if(self.is_valid_move(board,i,j,"W")):
 					temp_board= copy.deepcopy(board)
 					self.apply_move(temp_board,i,j,"W")
 					t1,t2,s=self.min_value(temp_board,step-1)
-					if (s > score):
+					if (s > score and s>0):
 						score=s
 						ii=i
 						jj=j
+				
 
 		return ii,jj,score
 
@@ -139,16 +139,29 @@ class othello:
 	def min_value(self,board,step):
 		if(step==-1): return -1,-1,self.score(board,"W")
 		score=10000
-		ii,jj=0,0
+		ii,jj=-1,-1
 		for i in range(self.BOARD_SIZE):
 			for j in range(self.BOARD_SIZE):
 				if(self.is_valid_move(board,i,j,"B")):
 					temp_board= copy.deepcopy(board)
 					self.apply_move(temp_board,i,j,"B")
 					t1,t2,s=self.max_value(temp_board,step-1)
-					if (s < score):
+					if (s < score and s >0):
 						score=s
 						ii=i
 						jj=j 
 
 		return ii,jj,score
+
+	def final_score(self,board):
+		b_score=0;
+		w_score=0;
+		for i in range(self.BOARD_SIZE):
+			for j in range(self.BOARD_SIZE):
+				if(board[i][j]=="B"):
+					b_score+=1
+				if(board[i][j]=="W"):
+					w_score+=1
+
+		print("black:" + str(b_score))
+		print("white:" + str(w_score))
