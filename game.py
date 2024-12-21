@@ -7,7 +7,7 @@ class othello:
 		self.BOARD_SIZE = 8  # it must be even
 		self.CELL_SIZE = 80  
 		self.SCREEN_SIZE = self.BOARD_SIZE * self.CELL_SIZE
-		self.STEP = 3
+		self.STEP = 6
 
 		# رنگ‌ها
 		self.WHITE = (255, 255, 255)
@@ -102,7 +102,7 @@ class othello:
 			for j in range(self.BOARD_SIZE):
 				if (board[i][j]==turn):
 					if ((i ==0 and j == 0) or (i ==0 and j == self.BOARD_SIZE-1) or (i == self.BOARD_SIZE-1 and j == 0) or (i == self.BOARD_SIZE-1 and j == self.BOARD_SIZE-1)):
-						score+= self.BOARD_SIZE * 4;
+						score+= self.BOARD_SIZE * 4
 
 					else:						
 						i_t = abs(i - (self.BOARD_SIZE-1)/2)
@@ -114,11 +114,11 @@ class othello:
 
 
 	def minmax_search(self,board):
-		t1,t2,s=self.max_value(board,self.STEP-1)
+		t1,t2,s=self.max_value(board,self.STEP-1,1000)
 		return t1,t2
 
-	def max_value(self,board,step):
-		if(step==-1): return -1,-1,self.score(board,"W")
+	def max_value(self,board,step,limit):
+		if(step==-1 or not self.has_valid_move(board, "W")): return -1,-1,self.score(board,"W")
 		score=0
 		ii,jj=-1,-1
 		for i in range(self.BOARD_SIZE):
@@ -126,18 +126,20 @@ class othello:
 				if(self.is_valid_move(board,i,j,"W")):
 					temp_board= copy.deepcopy(board)
 					self.apply_move(temp_board,i,j,"W")
-					t1,t2,s=self.min_value(temp_board,step-1)
+					t1,t2,s=self.min_value(temp_board,step-1,score)
 					if (s > score and s>0):
 						score=s
 						ii=i
 						jj=j
+						if(s>limit):
+							return -1,-1,0
 				
 
 		return ii,jj,score
 
 
-	def min_value(self,board,step):
-		if(step==-1): return -1,-1,self.score(board,"W")
+	def min_value(self,board,step,limit):
+		if(step==-1 or not self.has_valid_move(board, "B")): return -1,-1,self.score(board,"W")
 		score=10000
 		ii,jj=-1,-1
 		for i in range(self.BOARD_SIZE):
@@ -145,17 +147,19 @@ class othello:
 				if(self.is_valid_move(board,i,j,"B")):
 					temp_board= copy.deepcopy(board)
 					self.apply_move(temp_board,i,j,"B")
-					t1,t2,s=self.max_value(temp_board,step-1)
+					t1,t2,s=self.max_value(temp_board,step-1,score)
 					if (s < score and s >0):
 						score=s
 						ii=i
 						jj=j 
+						if(s<limit):
+							return -1,-1,0
 
 		return ii,jj,score
 
 	def final_score(self,board):
-		b_score=0;
-		w_score=0;
+		b_score=0
+		w_score=0
 		for i in range(self.BOARD_SIZE):
 			for j in range(self.BOARD_SIZE):
 				if(board[i][j]=="B"):

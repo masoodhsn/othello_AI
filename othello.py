@@ -1,6 +1,7 @@
 ﻿import pygame
 import sys
 import game
+import copy
 
 
 def main():
@@ -11,6 +12,7 @@ def main():
     clock = pygame.time.Clock()
 
     board = othello.create_board()
+    back_board=copy.deepcopy(board)
     turn = "B"  # ‌black player is start
 
 
@@ -22,11 +24,15 @@ def main():
                 pygame.quit()
                 sys.exit()
 
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
+                board=copy.deepcopy(back_board)
 
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and turn == "B":  # کلیک چپ
 
                 row, col = othello.get_cell_from_mouse(pos)
                 if othello.is_valid_move(board, row, col, "B"):
+                    print(str(row)+" "+str(col))
+                    back_board = copy.deepcopy(board)
                     othello.apply_move(board, row, col, "B")
                     turn = othello.toggle_turn("B")
                 #print("B:"+str(othello.score(board,"B")))
@@ -44,10 +50,9 @@ def main():
                         turn = othello.toggle_turn(turn)
                         if not othello.has_valid_move(board, turn):
                             print("Game Over!")
-                            othello.final_score(board)
-                            #break;
-                            #pygame.quit()
-                            #sys.exit()
+                            othello.final_score(board) 
+                            pygame.quit()
+                            sys.exit()
 
         othello.draw_board(screen, board)
         pygame.display.flip()
