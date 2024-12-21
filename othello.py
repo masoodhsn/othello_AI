@@ -2,19 +2,22 @@
 import sys
 import game
 import copy
+import Data_control
 
 
 def main():
+    learn=True
     pygame.init()
     othello=game.othello()
+    data=Data_control.Data()
     screen = pygame.display.set_mode((othello.SCREEN_SIZE, othello.SCREEN_SIZE))
     pygame.display.set_caption("Othello Game")
     clock = pygame.time.Clock()
 
+    score_board=data.best()
     board = othello.create_board()
     back_board=copy.deepcopy(board)
     turn = "B"  # ‌black player is start
-
 
 
     while True:
@@ -39,7 +42,7 @@ def main():
 
 
             elif turn=="W":
-                i,j=othello.minmax_search(board)
+                i,j=othello.minmax_search(board,score_board)
                 if i>=0 and j>=0:
                     othello.apply_move(board, i, j, "W")
                     turn = othello.toggle_turn("W")
