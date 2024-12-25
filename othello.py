@@ -6,7 +6,7 @@ import Data_control
 
 
 def main():
-    learn=False
+    learn=True
     pygame.init()
     othello=game.othello()
     data=Data_control.Data(8)
@@ -92,6 +92,7 @@ def main():
                             if not learn:
                                 pygame.quit()
                                 sys.exit()
+                            break;
 
 if __name__ == "__main__":
     main()
