@@ -116,7 +116,7 @@ class Data:
 
 if not os.path.exists("data.json"):
     data=Data(8)
-    state=[[1,1,1,1],[1,1,1,1],[1,1,1,1],[1,1,1,1]]
-    initial_data=MyStruct(0,-1,0,0,state).to_dict()
+    state=[[20,15,15,15],[15,8,8,8],[15,8,10,10],[15,8,10,5]]
+    initial_data=MyStruct(0,-1,0,10,state).to_dict()
     data.save(initial_data)
 

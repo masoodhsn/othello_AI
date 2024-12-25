@@ -21,17 +21,22 @@ def main():
     turn = "B"  # ‌black player is start
 
     while True:
-        learn_data_b=data.give_me_score_board()
-        score_board_b= list(learn_data_b.values())[0]['state']
         learn_data_w=data.give_me_score_board()
         score_board_w=list(learn_data_w.values())[0]['state']
+        learn_data_b=data.give_me_score_board()
+        score_board_b= list(learn_data_b.values())[0]['state']
+        
+        while(score_board_b == score_board_w):
+            learn_data_b=data.give_me_score_board()
+            score_board_b= list(learn_data_b.values())[0]['state']
+            if not learn: break
 
         if learn:
-            print("score board B")
+            print("score board B: "+str(list(learn_data_b)[0]))
             for i in score_board_b:
                 print(i)
    
-        print("score board W")
+        print("score board W: "+str(list(learn_data_w)[0]))
         for i in score_board_w:
             print(i)
 
@@ -83,9 +88,11 @@ def main():
                             board=othello.create_board()
                             if W>B :
                                 list(learn_data_w.values())[0]['win']+=1
+                                print(str(str(list(learn_data_w)[0]))" is winner")
                             else:
                                 list(learn_data_b.values())[0]['win']+=1
-                            
+                                print(str(str(list(learn_data_b)[0]))+" is winner")
+
                             if learn:                            
                                 data.save(learn_data_b)
                             data.save(learn_data_w)
