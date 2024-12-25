@@ -6,7 +6,7 @@ import Data_control
 
 
 def main():
-    learn=True
+    learn=False
     pygame.init()
     othello=game.othello()
     data=Data_control.Data(8)
@@ -88,7 +88,7 @@ def main():
                             board=othello.create_board()
                             if W>B :
                                 list(learn_data_w.values())[0]['win']+=1
-                                print(str(str(list(learn_data_w)[0]))" is winner")
+                                print(str(str(list(learn_data_w)[0]))+" is winner")
                             else:
                                 list(learn_data_b.values())[0]['win']+=1
                                 print(str(str(list(learn_data_b)[0]))+" is winner")
