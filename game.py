@@ -7,7 +7,7 @@ class othello:
 		self.BOARD_SIZE = 8  # it must be even
 		self.CELL_SIZE = 80  
 		self.SCREEN_SIZE = self.BOARD_SIZE * self.CELL_SIZE
-		self.STEP = 5
+		self.STEP = 4
 
 		# رنگ‌ها
 		self.WHITE = (255, 255, 255)
@@ -113,20 +113,21 @@ class othello:
 		return(score)
 
 
-	def minmax_search(self,board,score_board):
-		t1,t2,s=self.max_value(board,self.STEP-1,score_board,1000)
+	def minmax_search(self,board,score_board,turn):
+		t1,t2,s=self.max_value(board,self.STEP-1,score_board,turn,1000)
 		return t1,t2
 
-	def max_value(self,board,step,score_board,limit):
-		if(step==-1 or not self.has_valid_move(board, "W")): return -1,-1,self.score(board,"W",score_board)
+	def max_value(self,board,step,score_board,turn,limit):
+		opponent = "W" if turn == "B" else "B"
+		if(step==-1 or not self.has_valid_move(board, turn)): return -1,-1,self.score(board,turn,score_board)
 		score=0
 		ii,jj=-1,-1
 		for i in range(self.BOARD_SIZE):
 			for j in range(self.BOARD_SIZE):
-				if(self.is_valid_move(board,i,j,"W")):
+				if(self.is_valid_move(board,i,j,turn)):
 					temp_board= copy.deepcopy(board)
-					self.apply_move(temp_board,i,j,"W")
-					t1,t2,s=self.min_value(temp_board,step-1,score_board,score)
+					self.apply_move(temp_board,i,j,turn)
+					t1,t2,s=self.min_value(temp_board,step-1,score_board,opponent,score)
 					if (s > score and s>0):
 						score=s
 						ii=i
@@ -138,16 +139,17 @@ class othello:
 		return ii,jj,score
 
 
-	def min_value(self,board,step,score_board,limit):
-		if(step==-1 or not self.has_valid_move(board, "B")): return -1,-1,self.score(board,"W",score_board)
+	def min_value(self,board,step,score_board,turn,limit):
+		opponent = "W" if turn == "B" else "B"
+		if(step==-1 or not self.has_valid_move(board, turn)): return -1,-1,self.score(board,turn,score_board)
 		score=10000
 		ii,jj=-1,-1
 		for i in range(self.BOARD_SIZE):
 			for j in range(self.BOARD_SIZE):
-				if(self.is_valid_move(board,i,j,"B")):
+				if(self.is_valid_move(board,i,j,turn)):
 					temp_board= copy.deepcopy(board)
-					self.apply_move(temp_board,i,j,"B")
-					t1,t2,s=self.max_value(temp_board,step-1,score_board,score)
+					self.apply_move(temp_board,i,j,turn)
+					t1,t2,s=self.max_value(temp_board,step-1,score_board,opponent,score)
 					if (s < score and s >0):
 						score=s
 						ii=i
@@ -169,3 +171,5 @@ class othello:
 
 		print("black:" + str(b_score))
 		print("white:" + str(w_score))
+
+		return b_score,w_score

@@ -1,6 +1,7 @@
 import json
 import os
 import copy
+import random
 
 
 class MyStruct:
@@ -13,59 +14,109 @@ class MyStruct:
 
     def to_dict(self):
         return {
-            'number': self.number,
+            str(self.number):{
             'father': self.father,
             'win': self.win,
-            'loss': self.loss,
+            'number': self.loss,
             'state': self.state
+            }
         }
     
 
 
 class Data:
+    def __init__(self, board_size):
+        self.BOARD_SIZE=board_size
 
-    def save(self,data):    
-        data_dict = [item.to_dict() for item in data]        
-        try:
-            with open("data.json", 'w') as file:
-                json.dump(data_dict, file, indent=4)
-            print("data saved successfully")
-        except Exception as e:
-            print(f"Error on saveing data: {e}")
+
+
+    def save(self,data): 
+        fe=self.fetch()
+
+        for key, value in data.items():
+            if key in fe:
+                fe[key] = value 
+            else:
+                fe.update(data)
+
+        with open("data.json", "w", encoding="utf-8") as json_file:
+            json.dump(fe, json_file, ensure_ascii=False, indent=4)
 
 
 
 
     def fetch(self):
-        if not os.path.exists("data.json"):
-            print("data.json not found")
-            print("create data.json with initial data")
-            state=[[1,1,1,1],[1,1,1,1],[1,1,1,1],[1,1,1,1]]
-            initial_data=[MyStruct(0,-1,0,0,state)]
-            self.save(initial_data)
-            return [item.to_dict() for item in initial_data]
+        try:
+        
+            with open("data.json", "r", encoding="utf-8") as json_file:
+                data = json.load(json_file)
+        except FileNotFoundError:
+            data = {}
 
-        else:
-            print("data.json founded")
-            try:
-                with open("data.json", 'r') as file:
-                    loaded_data_dict = json.load(file)
-                print("data fetched successfully")
-            except Exception as e:
-                print(f"Error on saveing data: {e}")
-
-            return loaded_data_dict
+        return data
         
 
-    def best(self):
-        datas=self.fetch()
-        out=[]
-        max=-10000
-        for item in datas:
-            if (item['win']-item['loss']>max):
-                max=item['win']-item['loss']
-                out=copy.deepcopy(item['state'])
-
+    def set_ret(self,data,id):
+        out={}
+        out={id:data[id]}
+        for i in data:
+            if str(data[i]["father"]) == list(out)[0]:
+                out.update({i:data[i]})
         return out
+    
+    def select(self,in_set):
+        games=0
+        for i in in_set:
+            games+=in_set[i]['number']+1
 
+        choose=random.randint(0,games)
+        win=0
+        for i in in_set:
+            win+=in_set[i]['win']+1
+            if choose<=win: return {i:in_set[i]}
+
+        return -1
+        
+    def find(seld,data,board):
+        for i in data:
+            if data[i]['state']==board:
+                return True
+        
+        return False
+
+
+    def give_me_score_board(self):
+        data=self.fetch()
+        out={}
+        out=self.select(self.set_ret(data,"0"))
+        node='0'
+
+        while out == -1 or list(out.keys())[0]!=node:
+            if(out != -1):
+                node = list(out.keys())[0]
+                out=self.select(self.set_ret(data,node)) 
+            else:
+                out = {node:data[node]}
+                i=random.randint(0,int(self.BOARD_SIZE/2)-1)
+                j=random.randint(0,int(self.BOARD_SIZE/2)-1)
+                temp=copy.deepcopy(out[node]['state'])
+                temp[i][j]+=1
+                if not self.find(data,temp):
+                    out =MyStruct(int(list(data)[-1])+1,str(node),0,0,temp).to_dict()
+                    node=str(int(list(data)[-1])+1)
+
+        out[node]['number']+=1
+        return out
+            
+
+
+
+
+
+
+if not os.path.exists("data.json"):
+    data=Data(8)
+    state=[[1,1,1,1],[1,1,1,1],[1,1,1,1],[1,1,1,1]]
+    initial_data=MyStruct(0,-1,0,0,state).to_dict()
+    data.save(initial_data)
 
