@@ -5,8 +5,42 @@ import copy
 import Data_control
 
 
+
+def check_finish(turn,board,othello,learn,data,learn_data_w,learn_data_b):
+    turn = othello.toggle_turn(turn)
+    if not othello.has_valid_move(board, turn):
+        print("Game Over!")
+        B,W=othello.final_score(board) 
+        if W>B :
+            list(learn_data_w.values())[0]['win']+=1
+            print(str(str(list(learn_data_w)[0]))+" is winner")
+        else:
+            if(learn):
+                list(learn_data_b.values())[0]['win']+=1
+                print(str(str(list(learn_data_b)[0]))+" is winner")
+            else:
+                print("Black win.")   
+            if(W>B):                       
+                if learn:  
+                    data.save(learn_data_b,0)
+                data.save(learn_data_w,1)
+            else:
+                if learn: 
+                    data.save(learn_data_b,1)
+                data.save(learn_data_w,0)
+
+        
+        if not learn:
+            input('press enter ...')        
+            pygame.quit()
+            sys.exit()
+        return False
+    return turn
+
+
+
 def main():
-    learn=False
+    learn=True
     pygame.init()
     othello=game.othello()
     data=Data_control.Data(8)
@@ -21,6 +55,11 @@ def main():
     turn = "B"  # ‌black player is start
 
     while True:
+        
+        othello.draw_board(screen, board)
+        pygame.display.flip()
+        clock.tick(30)
+        board=othello.create_board()
         learn_data_w=data.give_me_score_board()
         score_board_w=list(learn_data_w.values())[0]['state']
         learn_data_b=data.give_me_score_board()
@@ -70,37 +109,31 @@ def main():
                     othello.apply_move(board, i, j, "B")
                     turn = othello.toggle_turn("B")
                     #print("W:"+str(othello.score(board,"B")))
+
             elif turn=="W":
+                if not othello.has_valid_move(board, "W"):
+                    p=check_finish("W",board,othello,learn,data,learn_data_w,learn_data_b)
+                    if(p== False):
+                        break 
+                    else: 
+                        turn=p
+
                 i,j=othello.minmax_search(board,score_board_w,"W")
                 if i>=0 and j>=0:
                     othello.apply_move(board, i, j, "W")
                     turn = othello.toggle_turn("W")
                     #print("W:"+str(othello.score(board,"W")))
-            
-            if not othello.has_valid_move(board, turn):
-                        turn = othello.toggle_turn(turn)
-                        if not othello.has_valid_move(board, turn):
-                            print("Game Over!")
-                            B,W=othello.final_score(board) 
-                            board=othello.create_board()
-                            if W>B :
-                                list(learn_data_w.values())[0]['win']+=1
-                                print(str(str(list(learn_data_w)[0]))+" is winner")
-                            else:
-                                if(learn):
-                                    list(learn_data_b.values())[0]['win']+=1
-                                    print(str(str(list(learn_data_b)[0]))+" is winner")
-                                else:
-                                    print("Black win.")
 
-                            if learn:                            
-                                data.save(learn_data_b)
-                            data.save(learn_data_w)
-                            if not learn:
-                                input('press enter ...')
-                                pygame.quit()
-                                sys.exit()
-                            break
+                if not othello.has_valid_move(board, "B"):
+                    othello.draw_board(screen, board)
+                    pygame.display.flip()
+                    clock.tick(30)
+                    p=check_finish("B",board,othello,learn,data,learn_data_w,learn_data_b)
+                    if(p== False):
+                        break 
+                    else: 
+                        turn=p
+                        
 
 if __name__ == "__main__":
     main()

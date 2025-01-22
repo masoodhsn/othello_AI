@@ -6,7 +6,7 @@ class othello:
 		self.BOARD_SIZE = 8  # it must be even
 		self.CELL_SIZE = 80  
 		self.SCREEN_SIZE = self.BOARD_SIZE * self.CELL_SIZE
-		self.STEP = 4
+		self.STEP = 3
 
 	
 		self.WHITE = (255, 255, 255)
@@ -126,6 +126,10 @@ class othello:
 				if(self.is_valid_move(board,i,j,turn)):
 					temp_board= copy.deepcopy(board)
 					self.apply_move(temp_board,i,j,turn)
+
+					if (step == self.STEP-1 and self.score(board,opponent,score_board)==0):
+						return i,j,0
+
 					t1,t2,s=self.min_value(temp_board,step-1,score_board,opponent,score)
 					if (s > score and s>0):
 						score=s
