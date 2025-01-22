@@ -3,13 +3,12 @@ import copy
 
 class othello:
 	def __init__(self):
-		# تنظیمات صفحه
 		self.BOARD_SIZE = 8  # it must be even
 		self.CELL_SIZE = 80  
 		self.SCREEN_SIZE = self.BOARD_SIZE * self.CELL_SIZE
 		self.STEP = 4
 
-		# رنگ‌ها
+	
 		self.WHITE = (255, 255, 255)
 		self.BLACK = (0, 0, 0)
 		self.GREEN = (34, 139, 34)
@@ -32,9 +31,9 @@ class othello:
 		for row in range(self.BOARD_SIZE):
 			for col in range(self.BOARD_SIZE):
 				rect = pygame.Rect(col * self.CELL_SIZE, row * self.CELL_SIZE, self.CELL_SIZE, self.CELL_SIZE)
-				pygame.draw.rect(screen, self.BLACK, rect, width=1)  # رسم خطوط خانه‌ها
+				pygame.draw.rect(screen, self.BLACK, rect, width=1) 
             
-				# رسم مهره‌ها
+				
 				if board[row][col] == "W":
 					pygame.draw.circle(screen, self.WHITE, rect.center, self.CELL_SIZE // 3)
 				elif board[row][col] == "B":
@@ -114,7 +113,7 @@ class othello:
 
 
 	def minmax_search(self,board,score_board,turn):
-		t1,t2,s=self.max_value(board,self.STEP-1,score_board,turn,1000)
+		t1,t2,s=self.max_value(board,self.STEP-1,score_board,turn,1000000)
 		return t1,t2
 
 	def max_value(self,board,step,score_board,turn,limit):
@@ -141,8 +140,8 @@ class othello:
 
 	def min_value(self,board,step,score_board,turn,limit):
 		opponent = "W" if turn == "B" else "B"
-		if(step==-1 or not self.has_valid_move(board, turn)): return -1,-1,self.score(board,turn,score_board)
-		score=10000
+		if(step==-1 or not self.has_valid_move(board, turn)): return -1,-1,self.score(board,opponent,score_board)
+		score=1000000
 		ii,jj=-1,-1
 		for i in range(self.BOARD_SIZE):
 			for j in range(self.BOARD_SIZE):

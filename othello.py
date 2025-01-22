@@ -44,19 +44,16 @@ def main():
         while True:
             for event in pygame.event.get():
                 pos = pygame.mouse.get_pos()
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
 
-                elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
                     board=copy.deepcopy(back_board)
+                    turn="B"
 
                 
-                elif not learn and event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and turn == "B":  # کلیک چپ
+                elif not learn and event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and turn == "B": 
 
                     row, col = othello.get_cell_from_mouse(pos)
                     if othello.is_valid_move(board, row, col, "B"):
-                        print(str(row)+" "+str(col))
                         back_board = copy.deepcopy(board)
                         othello.apply_move(board, row, col, "B")
                         turn = othello.toggle_turn("B")
@@ -90,16 +87,20 @@ def main():
                                 list(learn_data_w.values())[0]['win']+=1
                                 print(str(str(list(learn_data_w)[0]))+" is winner")
                             else:
-                                list(learn_data_b.values())[0]['win']+=1
-                                print(str(str(list(learn_data_b)[0]))+" is winner")
+                                if(learn):
+                                    list(learn_data_b.values())[0]['win']+=1
+                                    print(str(str(list(learn_data_b)[0]))+" is winner")
+                                else:
+                                    print("Black win.")
 
                             if learn:                            
                                 data.save(learn_data_b)
                             data.save(learn_data_w)
                             if not learn:
+                                input('press enter ...')
                                 pygame.quit()
                                 sys.exit()
-                            break;
+                            break
 
 if __name__ == "__main__":
     main()
